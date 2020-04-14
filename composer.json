@@ -1,11 +1,11 @@
 {
-    "name": "melhorenvio/sdk-php",
+    "name": "melhorenvio/sdk-auth",
     "description": "",
     "keywords": [
         "melhorenvio",
-        "sdk-php"
+        "sdk-auth"
     ],
-    "homepage": "https://github.com/melhorenvio/sdk-php",
+    "homepage": "https://github.com/melhorenvio/sdk-auth",
     "license": "MIT",
     "type": "library",
     "authors": [
@@ -22,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "MelhorEnvio\\": "src"
+            "MelhorEnvio\\Auth": "src"
         }
     },
     "autoload-dev": {
