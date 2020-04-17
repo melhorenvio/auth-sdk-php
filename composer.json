@@ -1,11 +1,13 @@
 {
-    "name": "melhorenvio/sdk-auth",
+    "name": "melhorenvio/sdk-php-auth",
     "description": "",
     "keywords": [
         "melhorenvio",
-        "sdk-auth"
+        "sdk-php-auth",
+        "php",
+        "auth"
     ],
-    "homepage": "https://github.com/melhorenvio/sdk-auth",
+    "homepage": "https://github.com/melhorenvio/sdk-php-auth",
     "license": "MIT",
     "type": "library",
     "authors": [
