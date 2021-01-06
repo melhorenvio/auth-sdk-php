@@ -1,6 +1,5 @@
 <?php
 
-// Mudar para o require da classe: OAuth2;
 require "vendor/autoload.php";
 
 use MelhorEnvio\Auth\OAuth2;
