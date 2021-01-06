@@ -49,6 +49,11 @@ class OAuth2
     protected $scope = [];
 
     /**
+     * @var Client
+     */
+    private $client;
+
+    /**
      * New instance OAuth2
      *
      * @param $clientId
@@ -68,16 +73,16 @@ class OAuth2
      * @param  string $path
      * @return string
      */
-    protected function getEndpoint($path = '')
+    protected function getEndpoint($path = ''): string
     {
         return self::ENDPOINT[$this->environment] . $path;
     }
 
     /**
-     * @param  string $path
+     * @param $environment
      * @return string
      */
-    protected function setEnvironment($environment)
+    protected function setEnvironment($environment): string
     {
         $this->environment = $environment;
     }
@@ -85,7 +90,7 @@ class OAuth2
     /**
      * @return string
      */
-    public function getAuthorizationUrl()
+    public function getAuthorizationUrl(): string
     {
         $query = http_build_query([
             'response_type' => 'code',
@@ -103,7 +108,7 @@ class OAuth2
      * @param null $state
      * @return mixed
      *
-     * @throws OAuth2Exception
+     * @throws AccessTokenException
      */
     public function getAccessToken($code, $state = null)
     {
@@ -129,12 +134,12 @@ class OAuth2
     }
 
     /**
-     * @param  string $refreshToken
+     * @param string $refreshToken
      * @return mixed
      *
-     * @throws OAuth2Exception
+     * @throws RefreshTokenException
      */
-    public function refreshToken($refreshToken)
+    public function refreshToken(string $refreshToken)
     {
         try {
             $response = $this->client->post($this->getEndpoint('/oauth/token'), [
@@ -165,7 +170,7 @@ class OAuth2
     /**
      * @return string
      */
-    public function getScopes()
+    public function getScopes(): string
     {
         return join(" ", $this->scope);
     }
@@ -181,7 +186,7 @@ class OAuth2
     /**
      * @return string
      */
-    public function getRedirectUri()
+    public function getRedirectUri(): ?string
     {
         return $this->redirectUri;
     }
@@ -189,9 +194,9 @@ class OAuth2
     /**
      * @return string
      */
-    protected function getState()
+    protected function getState(): string
     {
-        if (! $_SESSION['me::auth::state']) {
+        if (empty($_SESSION['me::auth::state'])) {
             $this->setState(
                 hash('sha256', md5(uniqid(rand(), true)))
             );
