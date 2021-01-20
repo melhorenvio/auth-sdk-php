@@ -4,8 +4,6 @@ require "vendor/autoload.php";
 
 use MelhorEnvio\Auth\OAuth2;
 
-
-var_dump("aqui");
 session_start();
 
 $auth = new OAuth2(
@@ -14,21 +12,18 @@ $auth = new OAuth2(
     'http://teste.sandbox.com.br'
 );
 
-if (isset($_GET['error'])) {
-    print($_GET['error_description']);
-    exit;
-}
-
 if (! isset($_GET['code'])) {
-    $auth->setScopes('user-read');
+    $auth->setScopes('cart-write', 'products-write', 'shipping-calculate', 'shipping-checkout');
+
     header("Location: {$auth->getAuthorizationUrl()}");
     exit;
 }
 
-echo "<pre>";
+echo '<pre>';
 
+print_r("aqui");
 print_r(
     $auth->getAccessToken($_GET['code'], $_GET['state'])
 );
 
-exit;
+echo '<pre>';
