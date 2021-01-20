@@ -1,6 +1,5 @@
 <?php
-
-require "vendor/autoload.php";
+require "../vendor/autoload.php";
 
 use MelhorEnvio\Auth\OAuth2;
 
@@ -13,17 +12,41 @@ $auth = new OAuth2(
 );
 
 if (! isset($_GET['code'])) {
-    $auth->setScopes('cart-write', 'products-write', 'shipping-calculate', 'shipping-checkout');
+    $auth->setScopes(
+        'cart-read',
+        'cart-write',
+        'companies-read',
+        'companies-write',
+        'coupons-read',
+        'coupons-write',
+        'notifications-read',
+        'orders-read',
+        'products-read',
+        'products-write',
+        'purchases-read',
+        'shipping-calculate',
+        'shipping-cancel',
+        'shipping-checkout',
+        'shipping-companies',
+        'shipping-generate',
+        'shipping-preview',
+        'shipping-print',
+        'shipping-share',
+        'shipping-tracking',
+        'ecommerce-shipping',
+        'transactions-read',
+        'users-read',
+        'users-write'
 
+    );
     header("Location: {$auth->getAuthorizationUrl()}");
     exit;
 }
 
-echo '<pre>';
+echo "<pre>";
 
-print_r("aqui");
 print_r(
     $auth->getAccessToken($_GET['code'], $_GET['state'])
 );
 
-echo '<pre>';
+exit;
