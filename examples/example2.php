@@ -12,24 +12,12 @@ $provider = new OAuth2(
     'http://teste.sandbox.com.br'
 );
 
-if (! isset($_GET['code'])) {
-    $provider->setScopes('users-read', 'users-write');
-    header("Location: {$provider->getAuthorizationUrl()}");
-    exit;
-}
+$provider->setScopes('users-read','users-write');
+header("Location: {$provider->getAuthorizationUrl()}");
 
-print_r(
-    $access = $provider->getAccessToken($_GET['code'], $_GET['state'])
-);
-
-if (is_null($access)) {
-    print_r(
-        $newAccess = $provider->getAccessToken('refresh-token' , [
-            'refresh-token' => $provider->refreshToken()
-        ])
-    );
-    exit;
-}
+$newAccess = $provider->getAccessToken('refresh-token' , [
+    'refresh-token' => $provider->refreshToken()
+]);
 
 echo "<pre>";
 
