@@ -5,14 +5,21 @@ use MelhorEnvio\Auth\OAuth2;
 
 session_start();
 
-$auth = new OAuth2(
-    624,
-    'ZNlrnALWQf4O2Q1xFWJiwIE004rOXQH3sgKJX86f',
-    'http://teste.sandbox.com.br'
-);
+$client_id = 'your-clientId';
+$client_secret = 'your-clientSecret';
+$redirect_uri = 'your-redirectUri';
+
+$provider = new OAuth2($client_id, $client_secret, $redirect_uri);
+
+//$auth_data = [
+//    'access-token' => $provider->getAccessToken(),
+//    'refresh-token' => $provider->refreshToken(),
+//    'created_at' => ,
+//    'expires_at' => ,
+//];
 
 if (! isset($_GET['code'])) {
-    $auth->setScopes(
+    $provider->setScopes(
         'cart-read',
         'cart-write',
         'companies-read',
@@ -37,16 +44,15 @@ if (! isset($_GET['code'])) {
         'transactions-read',
         'users-read',
         'users-write'
-
     );
-    header("Location: {$auth->getAuthorizationUrl()}");
+    header("Location: {$provider->getAuthorizationUrl()}");
     exit;
 }
 
 echo "<pre>";
 
 print_r(
-    $auth->getAccessToken($_GET['code'], $_GET['state'])
+    $provider->getAccessToken($_GET['code'], $_GET['state'])
 );
 
 exit;

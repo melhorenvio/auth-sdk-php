@@ -6,11 +6,18 @@ use MelhorEnvio\Auth\OAuth2;
 
 session_start();
 
-$provider = new OAuth2(
-    624,
-    'ZNlrnALWQf4O2Q1xFWJiwIE004rOXQH3sgKJX86f',
-    'http://teste.sandbox.com.br'
-);
+$client_id = 'your-clientId';
+$client_secret = 'your-clientSecret';
+$redirect_uri = 'your-redirectUri';
+
+$provider = new OAuth2($client_id, $client_secret, $redirect_uri);
+
+//$auth_data = [
+//  'access-token' => ,
+//  'refresh-token' => ,
+//  'created_at' => ,
+//  'expires_at' => ,
+//];
 
 if (isset($_GET['error'])) {
     print($_GET['error_description']);
