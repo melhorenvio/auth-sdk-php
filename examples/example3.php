@@ -1,22 +1,20 @@
 <?php
+
 require "../vendor/autoload.php";
 
 use MelhorEnvio\Auth\OAuth2;
 
 session_start();
 
-$client_id = 'your-clientId';
-$client_secret = 'your-clientSecret';
-$redirect_uri = 'your-redirectUri';
+$me_data = [];
 
-$provider = new OAuth2($client_id, $client_secret, $redirect_uri);
+$user_data = [
+    'client_id' => 'your-clientId',
+    'client_secret' => 'your-clientSecret',
+    'redirect_uri' => 'your-redirectUri'
+];
 
-//$auth_data = [
-//    'access-token' => $provider->getAccessToken(),
-//    'refresh-token' => $provider->refreshToken(),
-//    'created_at' => ,
-//    'expires_at' => ,
-//];
+$provider = new OAuth2($user_data['client_id'], $user_data['client_secret'], $user_data['redirect_uri']);
 
 if (! isset($_GET['code'])) {
     $provider->setScopes(
@@ -52,7 +50,7 @@ if (! isset($_GET['code'])) {
 echo "<pre>";
 
 print_r(
-    $provider->getAccessToken($_GET['code'], $_GET['state'])
+    $me_data[] = $provider->getAccessToken($_GET['code'], $_GET['state'])
 );
 
 exit;
