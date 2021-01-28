@@ -6,26 +6,24 @@ use MelhorEnvio\Auth\OAuth2;
 
 session_start();
 
-$token = 'your-token';
-$refreshToken = 'your-refresh-token';
-
-$user_data = [
-    'client_id' => '624',
-    'client_secret' => 'ZNlrnALWQf4O2Q1xFWJiwIE004rOXQH3sgKJX86f',
-    'redirect_uri' => 'http://teste.sandbox.com.br'
+$appData = [
+    'client_id' => 'your-client',
+    'client_secret' => 'your-client-secret',
+    'redirect_uri' => 'your-redirect-uri'
 ];
 
-$provider = new OAuth2($user_data['client_id'], $user_data['client_secret'], $user_data['redirect_uri']);
+$provider = new OAuth2($appData['client_id'], $appData['client_secret'], $appData['redirect_uri']);
 
-$auth_data = [
-    'access-token' => $token,
-    'refresh-token' => '',
-    'created_at' => '',
-    'expires_at' => '',
+$authData = [
+    'access_token' => 'your-token',
+    'refresh_token' => 'your-refresh-token',
+    'expires_in' => 'token-expires-timestamp',
 ];
 
-$newAccessToken = $provider->refreshToken($auth_data['access-token']);
+$newAuthData = $provider->refreshToken($authData['refresh_token']);
 
-print_r($newAccessToken);
+echo "<pre>";
+
+print_r($newAuthData);
 
 exit;

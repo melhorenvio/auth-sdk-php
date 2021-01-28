@@ -8,13 +8,13 @@ session_start();
 
 $me_data = [];
 
-$user_data = [
+$appData = [
     'client_id' => 'your-clientId',
     'client_secret' => 'your-clientSecret',
     'redirect_uri' => 'your-redirectUri'
 ];
 
-$provider = new OAuth2($user_data['client_id'], $user_data['client_secret'], $user_data['redirect_uri']);
+$provider = new OAuth2($appData['client_id'], $appData['client_secret'], $appData['redirect_uri']);
 
 if (! isset($_GET['code'])) {
     $provider->setScopes(
@@ -47,10 +47,10 @@ if (! isset($_GET['code'])) {
     exit;
 }
 
+$me_data[] = $provider->getAccessToken($_GET['code'], $_GET['state']);
+
 echo "<pre>";
 
-print_r(
-    $me_data[] = $provider->getAccessToken($_GET['code'], $_GET['state'])
-);
+print_r($me_data);
 
 exit;

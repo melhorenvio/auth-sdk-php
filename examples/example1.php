@@ -8,13 +8,13 @@ session_start();
 
 $me_data = [];
 
-$user_data = [
-    'client_id' => '624',
-    'client_secret' => 'ZNlrnALWQf4O2Q1xFWJiwIE004rOXQH3sgKJX86f',
-    'redirect_uri' => 'http://teste.sandbox.com.br'
+$appData = [
+    'client_id' => 'your-client',
+    'client_secret' => 'your-client-secret',
+    'redirect_uri' => 'your-redirect-uri'
 ];
 
-$provider = new OAuth2($user_data['client_id'], $user_data['client_secret'], $user_data['redirect_uri']);
+$provider = new OAuth2($appData['client_id'], $appData['client_secret'], $appData['redirect_uri']);
 
 if (isset($_GET['error'])) {
     print($_GET['error_description']);
@@ -27,10 +27,11 @@ if (! isset($_GET['code'])) {
     exit;
 }
 
+$me_data[] = $provider->getAccessToken($_GET['code'], $_GET['state']);
+
 echo "<pre>";
 
-print_r(
-    $me_data[] = $provider->getAccessToken($_GET['code'], $_GET['state'])
-);
+print_r($me_data);
 
 exit;
+
