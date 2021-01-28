@@ -6,7 +6,7 @@ use MelhorEnvio\Auth\OAuth2;
 
 session_start();
 
-$me_data = [];
+$meData = [];
 
 $appData = [
     'client_id' => 'your-clientId',

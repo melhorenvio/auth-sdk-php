@@ -6,7 +6,7 @@ use MelhorEnvio\Auth\OAuth2;
 
 session_start();
 
-$me_data = [];
+$meData = [];
 
 $appData = [
     'client_id' => 'your-client',
@@ -27,11 +27,11 @@ if (! isset($_GET['code'])) {
     exit;
 }
 
-$me_data[] = $provider->getAccessToken($_GET['code'], $_GET['state']);
+$meData[] = $provider->getAccessToken($_GET['code'], $_GET['state']);
 
 echo "<pre>";
 
-print_r($me_data);
+print_r($meData);
 
 exit;
 
