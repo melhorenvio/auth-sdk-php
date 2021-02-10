@@ -24,7 +24,7 @@ Agora você pode incluir o processo de autorização do Melhor Envio no seu proj
 ## Dependências
 
 ### require
-* PHP >= 5.6
+* PHP >= 7.1
 * Ext-json = *
 * Guzzlehttp/guzzle >= 6.5
 
