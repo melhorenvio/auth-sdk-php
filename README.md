@@ -11,8 +11,9 @@ Agora você pode incluir o processo de autorização do Melhor Envio no seu proj
 
 * [Instalação](#instalacao)
 * [Cofiguração Inicial](#configuração-inicial)
-* [Exemplos de uso](#Criando-a-instância-calculadora)
-* [Mais exemplos](##Mais-Exemplos)
+* [Exemplos de uso](#exemplos-de-uso)
+    * [Gerando o Access Token](#gerando-o-access-token)
+    * [Refresh Token](#refresh-token)
 * [Testes](##Testes)
 * [Changelog](##Changelog)
 * [Contribuindo](##Contribuindo)
@@ -41,9 +42,9 @@ composer require melhorenvio/sdk-auth
 
 ## Configuração inicial
 
-Logo após a instalação concluída, você irá preparar os dados a serem passados como parâmetro para a classe OAuth,
-lembrando que esses dados são os mesmos que são gerados por você no site do Melhor Envio na criação do aplicativo.
-Se você ainda não fez esse passo, basta acessar (link para criação).
+Logo após a instalação concluída, você irá preparar os dados a serem passados como parâmetro para a classe OAuth,  lembrando que esses dados são os mesmos que são gerados por você no site do Melhor Envio na criação do aplicativo.
+
+Se você ainda não fez esse passo, basta acessar https://melhorenvio.com.br/painel/gerenciar/tokens.
 
 ```php
 $appData = [
@@ -65,7 +66,7 @@ $provider = new OAuth2($appData['client_id'], $appData['client_secret'], $appDat
 Logo em seguida utilizado a variável onde foi instanciada a classe OAuth, $provider, você irá selecionar os
 escopos presentes na sua aplicação, podendo ser um ou vários.
 
-Lembrando que os escpopos estão disponíveis para consulta na documentação da API do Melhor Envio. (link para api)
+Lembrando que os escpopos estão disponíveis para consulta na documentação da API do Melhor Envio, neste link: https://docs.menv.io/?version=latest#03becc90-8b38-47bd-ba14-7994017462f0
 
 Logo em seguida, faça o redirecionamento para URL retornada pelo método getAuthorizationUrl().
 
@@ -77,13 +78,12 @@ exit;
 ```
 
 
-## Próximos passos
+## Gerando o Access Token
 
 Bom até aqui vimos como instanciar a classe OAuth, escolher os escopos a serem utilizados e montar a URL, porém quais
 são os próximos passos? 
 
-Temos o seguinte cenário, onde você irá utilizar o método getAccessToken(), disponibilizado no pacote,
-para obter a resposta com as informações necessárias para você ter êxito no processo de autorização.
+Temos o seguinte cenário, onde você irá utilizar o método getAccessToken(), para obter a resposta com as informações das credenciais necessárias para você ter êxito na realização de requisições para a API do Melhor Envio.
 
 ```php
 $authData[] = $provider->getAccessToken($_GET['code'], $_GET['state']);
@@ -91,7 +91,19 @@ $authData[] = $provider->getAccessToken($_GET['code'], $_GET['state']);
 
 Um exemplo da resposta dessas informações:
 
-(aqui exemplo de json)
+```json
+Array
+(
+    [0] => Array
+        (
+            [token_type] => Bearer
+            [expires_in] => timestampResponse
+            [access_token] => yourToken
+            [refresh_token] => yourRefreshToken
+        )
+
+)
+```
 
 
 ## Refresh Token
@@ -99,8 +111,7 @@ Um exemplo da resposta dessas informações:
 Após 30 dias o seu token irá expirar. Mas não se preocupe, o pacote oferece o método de refresh token para que você 
 deixe sua aplicação preparada para quando isso acontecer.
 
-Como essas informações foram geradas anteriormente, você irá utilizar o método refresToken, disponibilizado no pacote,
-passando como parâmetro o dado referente, tendo como resposta esse novo token.
+Como essas informações foram geradas anteriormente, você irá utilizar o método refreshToken passando como parâmetro o dado respectivo, tendo como resposta um novo token.
 
 ```php
 $newAuthData = $provider->refreshToken($authData['refresh_token']);
@@ -115,26 +126,22 @@ composer test
 
 ### Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
+Consulte [CHANGELOG](CHANGELOG.md) para mais informações de alterações recentes.
 
-## Contributing
+## Contribuindo
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+Consulte [CONTRIBUTING](CONTRIBUTING.md) para mais detalhes.
 
-### Security
+### Segurança
 
-If you discover any security related issues, please email rodrigo.silveira@melhorenvio.com instead of using the issue tracker.
+Se você descobrir algum problema de segurança, por favor, envie um e-mail para tecnologia@melhorenvio.com, ao invés de usar um *issue tracker*.
 
-## Credits
+## Créditos
 
 - [Rodrigo Silveira](https://github.com/rodriigogs)
-- [Marçal Pizzi](https://github.com/)
-- [Pedro Barros](https://github.com/)
+- [Marçal Pizzi](https://github.com/marcalpizzi)
+- [Pedro Barros](https://github.com/pedrobarros05)
 
-## License
+## Licença
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
-
-## PHP Package Boilerplate
-
-This package was generated using the [PHP Package Boilerplate](https://laravelpackageboilerplate.com).
+Melhor Envio. Consulte [Arquivo de lincença](LICENSE.md) para mais informações.
