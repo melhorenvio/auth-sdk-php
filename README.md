@@ -96,9 +96,9 @@ Array
     [0] => Array
         (
             [token_type] => Bearer
-            [expires_in] => timestampResponse
-            [access_token] => yourToken
-            [refresh_token] => yourRefreshToken
+            [expires_in] => your-token-expiration-timestamp
+            [access_token] => your-token
+            [refresh_token] => your-refresh-token
         )
 
 )
