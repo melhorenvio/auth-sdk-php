@@ -37,12 +37,12 @@ Agora você pode incluir o processo de autorização do Melhor Envio no seu proj
 Você pode instalar o pacote via composer:
 
 ```bash
-composer require melhorenvio/sdk-auth
+composer require melhorenvio/auth-sdk-php
 ```
 
 ## Configuração inicial
 
-Logo após a instalação concluída, você irá preparar os dados a serem passados como parâmetro para a classe OAuth,  lembrando que esses dados são os mesmos que são gerados por você no site do Melhor Envio na criação do aplicativo.
+Logo após a instalação concluída, você irá preparar os dados a serem passados como parâmetro para a classe **OAuth**, lembrando que esses dados são os mesmos que são gerados por você no site do Melhor Envio na criação do aplicativo.
 
 Se você ainda não fez esse passo, basta acessar https://melhorenvio.com.br/painel/gerenciar/tokens.
 
@@ -54,7 +54,7 @@ $appData = [
 ];
 ```
 
-Em seguida, você instanciará a classe OAuth passando os parâmetros que você recebe acima.
+Em seguida, você instanciará a classe **OAuth** passando os parâmetros que você recebe acima.
 
 ``` php
 $provider = new OAuth2($appData['client_id'], $appData['client_secret'], $appData['redirect_uri']);
@@ -62,16 +62,15 @@ $provider = new OAuth2($appData['client_id'], $appData['client_secret'], $appDat
 
 
 ## Exemplos de uso
- 
-Logo em seguida utilizado a variável onde foi instanciada a classe OAuth, $provider, você irá selecionar os
-escopos presentes na sua aplicação, podendo ser um ou vários.
 
-Lembrando que os escpopos estão disponíveis para consulta na documentação da API do Melhor Envio, neste link: https://docs.menv.io/?version=latest#03becc90-8b38-47bd-ba14-7994017462f0
+Uma vez a classe OAuth estando estanciada, você irá informar os escopos que serão necessários para a sua aplicação utilizando o método ```setScopes()```, podendo ser um ou vários.
 
-Logo em seguida, faça o redirecionamento para URL retornada pelo método getAuthorizationUrl().
+Lembrando que os escopos estão disponíveis para consulta na documentação da API do Melhor Envio, neste link: https://docs.menv.io/?version=latest#03becc90-8b38-47bd-ba14-7994017462f0
+
+Logo em seguida, faça o redirecionamento para URL retornada pelo método ```getAuthorizationUrl()```.
 
 
-``` php
+```php
 $provider->setScopes('shipping-calculate');
 header("Location: {$provider->getAuthorizationUrl()}");
 exit;
@@ -83,7 +82,7 @@ exit;
 Bom até aqui vimos como instanciar a classe OAuth, escolher os escopos a serem utilizados e montar a URL, porém quais
 são os próximos passos? 
 
-Temos o seguinte cenário, onde você irá utilizar o método getAccessToken(), para obter a resposta com as informações das credenciais necessárias para você ter êxito na realização de requisições para a API do Melhor Envio.
+Temos o seguinte cenário, onde você irá utilizar o método ```getAccessToken()```, para obter a resposta com as informações das credenciais necessárias para você ter êxito na realização de requisições para a API do Melhor Envio.
 
 ```php
 $authData[] = $provider->getAccessToken($_GET['code'], $_GET['state']);
@@ -108,10 +107,9 @@ Array
 
 ## Refresh Token
 
-Após 30 dias o seu token irá expirar. Mas não se preocupe, o pacote oferece o método de refresh token para que você 
-deixe sua aplicação preparada para quando isso acontecer.
+Após 30 dias o seu token irá expirar. Mas não se preocupe, o pacote oferece o método de refresh token para que você deixe sua aplicação preparada para quando isso acontecer.
 
-Como essas informações foram geradas anteriormente, você irá utilizar o método refreshToken passando como parâmetro o dado respectivo, tendo como resposta um novo token.
+Como essas informações foram geradas anteriormente, você irá utilizar o método ```refreshToken()``` passando como parâmetro o dado respectivo, tendo como resposta um novo token.
 
 ```php
 $newAuthData = $provider->refreshToken($authData['refresh_token']);
