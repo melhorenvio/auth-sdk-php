@@ -12,8 +12,8 @@
     "type": "library",
     "authors": [
         {
-            "name": "Rodrigo Silveira",
-            "email": "rodrigo.silveira@melhorenvio.com",
+            "name": "Melhor Envio",
+            "email": "tecnologia@melhorenvio.com",
             "role": "Developer"
         }
     ],
@@ -24,7 +24,7 @@
     },
     "autoload": {
         "psr-4": {
-            "MelhorEnvio\\Auth": "src"
+            "MelhorEnvio\\Auth\\": "src"
         }
     },
     "autoload-dev": {
