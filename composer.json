@@ -1,9 +1,9 @@
 {
-    "name": "melhorenvio/sdk-php-auth",
+    "name": "melhorenvio/auth-sdk-php",
     "description": "",
     "keywords": [
         "melhorenvio",
-        "sdk-php-auth",
+        "auth-sdk-php",
         "php",
         "auth"
     ],
