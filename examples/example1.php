@@ -1,6 +1,6 @@
 <?php
 
-require "../vendor/autoload.php";
+require "vendor/autoload.php";
 
 use MelhorEnvio\Auth\OAuth2;
 
@@ -22,7 +22,7 @@ if (isset($_GET['error'])) {
 }
 
 if (! isset($_GET['code'])) {
-    $provider->setScopes('users-read');
+    $provider->setScopes(['users-read']);
     header("Location: {$provider->getAuthorizationUrl()}");
     exit;
 }
