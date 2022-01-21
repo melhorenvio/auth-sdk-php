@@ -62,7 +62,7 @@ class OAuth2
     /**
      * @throws AccessTokenException
      */
-    public function getAccessToken(string $code, string $state = null)
+    public function getAccessToken(string $code, ?string $state)
     {
         if ($state) {
             $this->verifyState($state);
