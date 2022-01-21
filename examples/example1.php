@@ -34,4 +34,3 @@ echo "<pre>";
 print_r($authData);
 
 exit;
-
