@@ -27,7 +27,7 @@ class OAuth2
 
     private Client $client;
 
-    public function __construct(int  $clientId, string $clientSecret, string $redirectUri = null)
+    public function __construct(string  $clientId, string $clientSecret, string $redirectUri = null)
     {
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
@@ -62,7 +62,7 @@ class OAuth2
     /**
      * @throws AccessTokenException
      */
-    public function getAccessToken(string $code, string $state = null): void
+    public function getAccessToken(string $code, string $state = null)
     {
         if ($state) {
             $this->verifyState($state);
@@ -106,7 +106,7 @@ class OAuth2
         return json_decode((string) $response->getBody(), true);
     }
 
-    public function setScopes(array $scopes): void
+    public function setScopes(string $scopes): void
     {
         $this->scope = is_array($scopes)
             ? $scopes
