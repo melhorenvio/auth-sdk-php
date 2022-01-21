@@ -106,7 +106,7 @@ class OAuth2
         return json_decode((string) $response->getBody(), true);
     }
 
-    public function setScopes(array $scopes): void
+    public function setScopes(string $scopes): void
     {
         $this->scope = is_array($scopes)
             ? $scopes

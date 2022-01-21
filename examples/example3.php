@@ -17,7 +17,7 @@ $appData = [
 $provider = new OAuth2($appData['client_id'], $appData['client_secret'], $appData['redirect_uri']);
 
 if (! isset($_GET['code'])) {
-    $provider->setScopes([
+    $provider->setScopes(
         'cart-read',
         'cart-write',
         'companies-read',
@@ -42,7 +42,7 @@ if (! isset($_GET['code'])) {
         'transactions-read',
         'users-read',
         'users-write'
-    ]);
+    );
     header("Location: {$provider->getAuthorizationUrl()}");
     exit;
 }

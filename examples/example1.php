@@ -22,7 +22,7 @@ if (isset($_GET['error'])) {
 }
 
 if (! isset($_GET['code'])) {
-    $provider->setScopes(['users-read']);
+    $provider->setScopes('users-read');
     header("Location: {$provider->getAuthorizationUrl()}");
     exit;
 }
