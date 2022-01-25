@@ -1,6 +1,6 @@
 <?php
 
-require "../vendor/autoload.php";
+require "vendor/autoload.php";
 
 use MelhorEnvio\Auth\OAuth2;
 

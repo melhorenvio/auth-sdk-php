@@ -73,18 +73,23 @@ class OAuth2
      * @param  string $path
      * @return string
      */
-    protected function getEndpoint($path = ''): string
+    public function getEndpoint($path = ''): string
     {
         return self::ENDPOINT[$this->environment] . $path;
     }
 
     /**
      * @param $environment
-     * @return string
+     * @return void
      */
-    protected function setEnvironment($environment): string
+    public function setEnvironment($environment): void
     {
         $this->environment = $environment;
+    }
+
+    public function getEnvironment(): string
+    {
+        return $this->environment;
     }
 
     /**
