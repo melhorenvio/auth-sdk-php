@@ -76,6 +76,14 @@ header("Location: {$provider->getAuthorizationUrl()}");
 exit;
 ```
 
+## Visualizando Scopes utilizados
+
+Para visualizar o scopes utilizados, ou seja, as permissões de acesso para token que será gerado, basta utilizar o método ```getScopes()```, esse método irá retornar um array com os scopes utilizados.
+
+```php
+$authData[] = $provider->getScopes();
+```
+
 
 ## Gerando o Access Token
 
@@ -104,6 +112,21 @@ Array
 )
 ```
 
+## Definindo URL de callback 
+
+Após o usuário confirmar a autorização de uso de sua conta Melhor Envio, a API do Melhor Envio irá realizar uma request para a sua aplicação contendo o code necessário para a solicitação de token. Para definir essa URL de callback basta utilizar o método ```setRedirectUri()``` passando com parâmetro a URL que será utilizada, lembrando que essa URL precisa existir e ser válida, e deve ser a mesma URL informada no cadastro de aplicativo dentro da plataforma do Melhor Envio.
+
+```php
+$provider->setRedirectUri('http://foo.com.br/callback');
+```
+
+## Visualizar URL de callback 
+
+Para visualizar qual URL de callback o SDK está utilizando, basta utilizar o método ```getRedirectUri()```.
+
+```php
+$provider->getRedirectUri();
+```
 
 ## Refresh Token
 
@@ -115,6 +138,21 @@ Como essas informações foram geradas anteriormente, você irá utilizar o mét
 $newAuthData = $provider->refreshToken($authData['refresh_token']);
 ```
 
+## Visualizar Endpoint 
+
+Para visualizar o endpoint usado no SDK para utilizar o método ```getEndpoint()```
+
+```php
+$newAuthData = $provider->getEndpoint();
+```
+
+## Ambientes
+
+O SDK funciona em ambos ambientes do Melhor Envio, Produção e Sandbox, para isso funcionar de forma adequeada, é necessário informar qual ambiente está sendo utilizado, por padrão o ambiente usado é o ambiente de sandbox, para fazer a troca de ambiente basta utilizar o método  ```setEnvironment()``` passando como parâmetro uma string informando o ambiente (sandbox ou production).
+
+```php
+$newAuthData = $provider->setEnvironment('production');
+```
 
 ### Testing
 
