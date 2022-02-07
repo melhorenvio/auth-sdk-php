@@ -63,7 +63,7 @@ $provider = new OAuth2($appData['client_id'], $appData['client_secret'], $appDat
 
 ## Exemplos de uso
 
-Uma vez a classe OAuth estando estanciada, você irá informar os escopos que serão necessários para a sua aplicação utilizando o método ```setScopes()```, podendo ser um ou vários.
+Uma vez a classe OAuth estando estanciada, você irá informar os escopos que serão necessários para a sua aplicação utilizando o método ```setScopes()```, podendo ser um ou vários. Scopes são as permissões para as ações que o usuário pode ter com o token gerado, por exemplo, ver pedidos, ver carrinho de compras, enviar pedidos, etc.
 
 Lembrando que os escopos estão disponíveis para consulta na documentação da API do Melhor Envio, neste link: https://docs.menv.io/?version=latest#03becc90-8b38-47bd-ba14-7994017462f0
 
