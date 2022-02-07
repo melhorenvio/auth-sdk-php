@@ -63,7 +63,7 @@ $provider = new OAuth2($appData['client_id'], $appData['client_secret'], $appDat
 
 ## Exemplos de uso
 
-Uma vez a classe OAuth estando estanciada, você irá informar os escopos que serão necessários para a sua aplicação utilizando o método ```setScopes()```, podendo ser um ou vários.
+Uma vez a classe OAuth estando estanciada, você irá informar os escopos que serão necessários para a sua aplicação utilizando o método ```setScopes()```, podendo ser um ou vários. Scopes são as permissões para as ações que o usuário pode ter com o token gerado, por exemplo, ver pedidos, ver carrinho de compras, enviar pedidos, etc.
 
 Lembrando que os escopos estão disponíveis para consulta na documentação da API do Melhor Envio, neste link: https://docs.menv.io/?version=latest#03becc90-8b38-47bd-ba14-7994017462f0
 
@@ -74,6 +74,14 @@ Logo em seguida, faça o redirecionamento para URL retornada pelo método ```get
 $provider->setScopes('shipping-calculate');
 header("Location: {$provider->getAuthorizationUrl()}");
 exit;
+```
+
+## Visualizando Scopes utilizados
+
+Para visualizar o scopes utilizados, ou seja, as permissões de acesso para token que será gerado, basta utilizar o método ```getScopes()```, esse método irá retornar um array com os scopes utilizados.
+
+```php
+$authData[] = $provider->getScopes();
 ```
 
 
@@ -104,6 +112,21 @@ Array
 )
 ```
 
+## Definindo URL de callback 
+
+Após o usuário confirmar a autorização de uso de sua conta Melhor Envio, a API do Melhor Envio irá realizar uma request para a sua aplicação contendo o code necessário para a solicitação de token. Para definir essa URL de callback basta utilizar o método ```setRedirectUri()``` passando com parâmetro a URL que será utilizada, lembrando que essa URL precisa existir e ser válida, e deve ser a mesma URL informada no cadastro de aplicativo dentro da plataforma do Melhor Envio.
+
+```php
+$provider->setRedirectUri('http://foo.com.br/callback');
+```
+
+## Visualizar URL de callback 
+
+Para visualizar qual URL de callback o SDK está utilizando, basta utilizar o método ```getRedirectUri()```.
+
+```php
+$provider->getRedirectUri();
+```
 
 ## Refresh Token
 
@@ -115,6 +138,21 @@ Como essas informações foram geradas anteriormente, você irá utilizar o mét
 $newAuthData = $provider->refreshToken($authData['refresh_token']);
 ```
 
+## Visualizar Endpoint 
+
+Para visualizar o endpoint usado no SDK para utilizar o método ```getEndpoint()```
+
+```php
+$newAuthData = $provider->getEndpoint();
+```
+
+## Ambientes
+
+O SDK funciona em ambos ambientes do Melhor Envio, Produção e Sandbox, para isso funcionar de forma adequeada, é necessário informar qual ambiente está sendo utilizado, por padrão o ambiente usado é o ambiente de sandbox, para fazer a troca de ambiente basta utilizar o método  ```setEnvironment()``` passando como parâmetro uma string informando o ambiente (sandbox ou production).
+
+```php
+$newAuthData = $provider->setEnvironment('production');
+```
 
 ### Testing
 
