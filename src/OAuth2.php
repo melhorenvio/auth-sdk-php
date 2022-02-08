@@ -10,52 +10,24 @@ use MelhorEnvio\Auth\Exceptions\RefreshTokenException;
 
 class OAuth2
 {
-    /**
-     * API Endpoint
-     * @var Array
-     */
     const ENDPOINT = [
         'production' => 'https://melhorenvio.com.br',
         'sandbox' => 'https://sandbox.melhorenvio.com.br',
     ];
 
-    /**
-     * App environment
-     * @var string
-     */
-    protected $environment = 'sandbox';
+    protected string $environment = 'sandbox';
 
-    /**
-     * Client ID
-     * @var String
-     */
-    protected $clientId;
+    protected string $clientId;
 
-    /**
-     * Client Secret
-     * @var String
-     */
-    protected $clientSecret;
+    protected string $clientSecret;
 
-    /**
-     * Redirect URI
-     * @var string
-     */
-    protected $redirectUri;
+    protected string $redirectUri;
 
-    /**
-     * @var array
-     */
-    protected $scope = [];
+    protected array $scope = [];
 
-    /**
-     * New instance OAuth2
-     *
-     * @param $clientId
-     * @param $clientSecret
-     * @param null $redirectUri
-     */
-    public function __construct($clientId, $clientSecret, $redirectUri = null)
+    private Client $client;
+
+    public function __construct(string  $clientId, string $clientSecret, string $redirectUri = null)
     {
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
@@ -64,28 +36,17 @@ class OAuth2
         $this->client = new Client();
     }
 
-    /**
-     * @param  string $path
-     * @return string
-     */
-    protected function getEndpoint($path = '')
+    protected function getEndpoint(string $path = ''): string
     {
         return self::ENDPOINT[$this->environment] . $path;
     }
 
-    /**
-     * @param  string $path
-     * @return string
-     */
-    protected function setEnvironment($environment)
+    protected function setEnvironment(string $environment): string
     {
         $this->environment = $environment;
     }
 
-    /**
-     * @return string
-     */
-    public function getAuthorizationUrl()
+    public function getAuthorizationUrl(): string
     {
         $query = http_build_query([
             'response_type' => 'code',
@@ -99,13 +60,9 @@ class OAuth2
     }
 
     /**
-     * @param $code
-     * @param null $state
-     * @return mixed
-     *
-     * @throws OAuth2Exception
+     * @throws AccessTokenException
      */
-    public function getAccessToken($code, $state = null)
+    public function getAccessToken(string $code, ?string $state)
     {
         if ($state) {
             $this->verifyState($state);
@@ -129,12 +86,9 @@ class OAuth2
     }
 
     /**
-     * @param  string $refreshToken
-     * @return mixed
-     *
-     * @throws OAuth2Exception
+     * @throws RefreshTokenException
      */
-    public function refreshToken($refreshToken)
+    public function refreshToken(string $refreshToken): mixed
     {
         try {
             $response = $this->client->post($this->getEndpoint('/oauth/token'), [
@@ -152,46 +106,31 @@ class OAuth2
         return json_decode((string) $response->getBody(), true);
     }
 
-    /**
-     * @param $scopes
-     */
-    public function setScopes($scopes)
+    public function setScopes($scopes): void
     {
         $this->scope = is_array($scopes)
             ? $scopes
             : func_get_args();
     }
 
-    /**
-     * @return string
-     */
-    public function getScopes()
+    public function getScopes(): string
     {
         return join(" ", $this->scope);
     }
 
-    /**
-     * @param $redirectUri
-     */
-    public function setRedirectUri($redirectUri)
+    public function setRedirectUri(string $redirectUri): void
     {
         $this->redirectUri = $redirectUri;
     }
 
-    /**
-     * @return string
-     */
-    public function getRedirectUri()
+    public function getRedirectUri(): ?string
     {
         return $this->redirectUri;
     }
 
-    /**
-     * @return string
-     */
-    protected function getState()
+    protected function getState(): string
     {
-        if (! $_SESSION['me::auth::state']) {
+        if (empty($_SESSION['me::auth::state'])) {
             $this->setState(
                 hash('sha256', md5(uniqid(rand(), true)))
             );
@@ -200,18 +139,15 @@ class OAuth2
         return $_SESSION['me::auth::state'];
     }
 
-    /**
-     * @param $state
-     */
-    protected function setState($state)
+    protected function setState(string $state): void
     {
         $_SESSION['me::auth::state'] = $state;
     }
 
     /**
-     * @param $state
+     * @throws InvalidStateException
      */
-    protected function verifyState($state)
+    protected function verifyState(string $state): void
     {
         if (strlen($state) === 0 && $state !== $_SESSION['me::auth::state']) {
             throw new InvalidStateException;

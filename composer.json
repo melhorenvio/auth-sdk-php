@@ -1,9 +1,9 @@
 {
-    "name": "melhorenvio/sdk-php-auth",
+    "name": "melhorenvio/auth-sdk-php",
     "description": "",
     "keywords": [
         "melhorenvio",
-        "sdk-php-auth",
+        "auth-sdk-php",
         "php",
         "auth"
     ],
@@ -12,19 +12,21 @@
     "type": "library",
     "authors": [
         {
-            "name": "Rodrigo Silveira",
-            "email": "rodrigo.silveira@melhorenvio.com",
+            "name": "Melhor Envio",
+            "email": "tecnologia@melhorenvio.com",
             "role": "Developer"
         }
     ],
     "require": {
         "php": "^7.1",
         "ext-json": "*",
-        "guzzlehttp/guzzle": "^6.5"
+        "guzzlehttp/guzzle": "^6.5",
+        "phpunit/phpunit": "^9.5",
+        "vlucas/phpdotenv": "^5.4"
     },
     "autoload": {
         "psr-4": {
-            "MelhorEnvio\\Auth": "src"
+            "MelhorEnvio\\Auth\\": "src"
         }
     },
     "autoload-dev": {
@@ -35,7 +37,6 @@
     "scripts": {
         "test": "vendor/bin/phpunit",
         "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
-
     },
     "config": {
         "sort-packages": true
