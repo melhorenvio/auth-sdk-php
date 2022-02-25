@@ -88,7 +88,7 @@ class OAuth2
     /**
      * @throws RefreshTokenException
      */
-    public function refreshToken(string $refreshToken): mixed
+    public function refreshToken(string $refreshToken): array
     {
         try {
             $response = $this->client->post($this->getEndpoint('/oauth/token'), [
