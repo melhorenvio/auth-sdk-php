@@ -1,6 +1,6 @@
 <?php
 
-namespace MelhorEnvio\MelhorEnvio\Tests\Unit;
+namespace MelhorEnvio\Tests\Unit;
 
 require "vendor/autoload.php";
 
