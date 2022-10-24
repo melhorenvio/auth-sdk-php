@@ -6,3 +6,4 @@ vendor
 coverage
 .DS_Store
 .env
+/.phpunit.result.cache
