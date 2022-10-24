@@ -37,4 +37,38 @@ class OAuthTest extends TestCase
             )
         );
     }
+
+    /**
+     * @test
+     * @small
+     * @dataProvider environmentProvider
+     */
+    public function sets_environment(string $environment, string $expectedUrl): void
+    {
+        $oAuth2 = new OAuth2(
+            $this->testClientId,
+            $this->testClientSecret,
+            $this->testRedirectUri,
+        );
+
+        $oAuth2->setEnvironment($environment);
+
+        $sut = $oAuth2->getAuthorizationUrl();
+
+        $this->assertSame($expectedUrl, substr($sut, 0, strlen($expectedUrl)));
+    }
+
+    public function environmentProvider(): array
+    {
+        return [
+            'PRODUCTION environment' => [
+                'production',
+                'https://melhorenvio.com.br'
+            ],
+            'SANDBOX environment' => [
+                'sandbox',
+                'https://sandbox.melhorenvio.com.br'
+            ],
+        ];
+    }
 }

@@ -41,7 +41,7 @@ class OAuth2
         return self::ENDPOINT[$this->environment] . $path;
     }
 
-    protected function setEnvironment(string $environment): string
+    public function setEnvironment(string $environment): void
     {
         $this->environment = $environment;
     }
