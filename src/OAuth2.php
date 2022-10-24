@@ -10,7 +10,7 @@ use MelhorEnvio\Auth\Exceptions\RefreshTokenException;
 
 class OAuth2
 {
-    const ENDPOINT = [
+    private const ENDPOINT = [
         'production' => 'https://melhorenvio.com.br',
         'sandbox' => 'https://sandbox.melhorenvio.com.br',
     ];
