@@ -41,6 +41,42 @@ class OAuthTest extends TestCase
     /**
      * @test
      * @small
+     */
+    public function sets_scopes(): void
+    {
+        $oAuth2 = new OAuth2(
+            $this->testClientId,
+            $this->testClientSecret,
+            $this->testRedirectUri,
+        );
+
+        $oAuth2->setScopes('add-cart', 'read-cart');
+
+        $this->assertSame("add-cart read-cart", $oAuth2->getScopes());
+    }
+
+    /**
+     * @test
+     * @small
+     */
+    public function sets_redirect_uri(): void
+    {
+        $oAuth2 = new OAuth2(
+            $this->testClientId,
+            $this->testClientSecret,
+            $this->testRedirectUri,
+        );
+
+        $expectedRedirectUri = 'https://www.abc.com.br/callback';
+
+        $oAuth2->setRedirectUri($expectedRedirectUri);
+
+        $this->assertSame($expectedRedirectUri, $oAuth2->getRedirectUri());
+    }
+
+    /**
+     * @test
+     * @small
      * @dataProvider environmentProvider
      */
     public function sets_environment(string $environment, string $expectedUrl): void
