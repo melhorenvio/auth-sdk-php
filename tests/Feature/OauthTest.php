@@ -2,7 +2,7 @@
 
 namespace MelhorEnvio\Tests\Feature;
 
-require "vendor/autoload.php";
+require_once __DIR__. '/../../vendor/autoload.php';
 
 use Dotenv\Dotenv;
 use MelhorEnvio\Auth\OAuth2;
