@@ -10,14 +10,21 @@ use PHPUnit\Framework\TestCase;
 
 class OauthTest extends TestCase
 {
+    private string $testClientId;
+    private string $testClientSecret;
+    private string $testRedirectUri;
     protected OAuth2 $provider;
 
-    public function __construct()
+    protected function setUp(): void
     {
-        parent::__construct();
+        parent::setUp();
 
         $dotenv = Dotenv::createUnsafeImmutable(__DIR__ . '/../../');
         $dotenv->load();
+
+        $this->testClientId = $_ENV['TEST_CLIENT_ID'];
+        $this->testClientSecret = $_ENV['TEST_CLIENT_SECRET'];
+        $this->testRedirectUri = $_ENV['TEST_REDIRECT_URI'];
 
         $this->provider = new OAuth2(
             $_ENV['TEST_CLIENT_ID'],
@@ -102,5 +109,21 @@ class OauthTest extends TestCase
     public function returns_true_when_exists_method_verify_state()
     {
         $this->assertTrue(method_exists($this->provider, 'verifyState'));
+    }
+
+    /**
+     * @test
+     * @small
+     */
+    public function instantiates_correctly(): void
+    {
+        $this->assertInstanceOf(
+            OAuth2::class,
+            new OAuth2(
+                $this->testClientId,
+                $this->testClientSecret,
+                $this->testRedirectUri,
+            )
+        );
     }
 }
