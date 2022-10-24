@@ -50,9 +50,11 @@ class OAuthTest extends TestCase
             $this->testRedirectUri,
         );
 
-        $oAuth2->setScopes('add-cart', 'read-cart');
+        $expectedScopes = ['add-cart', 'read-cart'];
 
-        $this->assertSame("add-cart read-cart", $oAuth2->getScopes());
+        $oAuth2->setScopes(...$expectedScopes);
+
+        $this->assertSame($expectedScopes, $oAuth2->getScopes());
     }
 
     /**

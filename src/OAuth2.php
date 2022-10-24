@@ -113,9 +113,9 @@ class OAuth2
         }
     }
 
-    public function getScopes(): string
+    public function getScopes(): array
     {
-        return join(" ", $this->scope);
+        return $this->scope;
     }
 
     public function setRedirectUri(string $redirectUri): void
