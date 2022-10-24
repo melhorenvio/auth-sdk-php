@@ -4,9 +4,8 @@ namespace MelhorEnvio\Tests\Unit;
 
 require_once __DIR__. '/../../vendor/autoload.php';
 
-use Dotenv\Dotenv;
 use MelhorEnvio\Auth\OAuth2;
-use PHPUnit\Framework\TestCase;
+use MelhorEnvio\Tests\TestCase;
 
 class OAuthTest extends TestCase
 {
@@ -17,9 +16,6 @@ class OAuthTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $dotenv = Dotenv::createUnsafeImmutable(__DIR__ . '/../../');
-        $dotenv->load();
 
         $this->testClientId = $_ENV['TEST_CLIENT_ID'];
         $this->testClientSecret = $_ENV['TEST_CLIENT_SECRET'];

@@ -6,7 +6,7 @@ require_once __DIR__. '/../../vendor/autoload.php';
 
 use Dotenv\Dotenv;
 use MelhorEnvio\Auth\OAuth2;
-use PHPUnit\Framework\TestCase;
+use MelhorEnvio\Tests\TestCase;
 
 class OAuthTest extends TestCase
 {
