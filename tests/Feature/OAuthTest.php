@@ -8,7 +8,7 @@ use Dotenv\Dotenv;
 use MelhorEnvio\Auth\OAuth2;
 use PHPUnit\Framework\TestCase;
 
-class OauthTest extends TestCase
+class OAuthTest extends TestCase
 {
     protected OAuth2 $provider;
 
