@@ -19,7 +19,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": "^7.1",
+        "php": "^7.4",
         "ext-json": "*",
         "guzzlehttp/guzzle": "^6.5",
         "phpunit/phpunit": "^9.5",
