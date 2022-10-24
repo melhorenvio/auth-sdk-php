@@ -106,11 +106,11 @@ class OAuth2
         return json_decode((string) $response->getBody(), true);
     }
 
-    public function setScopes($scopes): void
+    public function setScopes(string ...$scopes): void
     {
-        $this->scope = is_array($scopes)
-            ? $scopes
-            : func_get_args();
+        foreach ($scopes as $scope) {
+            $this->scope[] = $scope;
+        }
     }
 
     public function getScopes(): string
