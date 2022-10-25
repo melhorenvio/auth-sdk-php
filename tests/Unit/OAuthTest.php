@@ -5,12 +5,23 @@ namespace MelhorEnvio\Tests\Unit;
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
+use JsonException;
+use MelhorEnvio\Auth\Exceptions\AccessTokenException;
 use MelhorEnvio\Auth\OAuth2;
 use MelhorEnvio\Tests\TestCase;
 use Mockery;
 
 class OAuthTest extends TestCase
 {
+    private const TEST_CODE = '::code::';
+    private const TEST_STATE = '::state::';
+
     private string $testClientId;
     private string $testClientSecret;
     private string $testRedirectUri;
@@ -117,6 +128,84 @@ class OAuthTest extends TestCase
         $this->assertSame($clientMock, $oAuth2->getClient());
     }
 
+    /**
+     * @test
+     * @small
+     * @dataProvider environmentProvider
+     * @throws JsonException|AccessTokenException
+     */
+    public function gets_access_token(string $environment, string $url): void
+    {
+        $expectedResponse = [
+            'token_type' => '::token-type::',
+            'expires_in' => '::expires-in::',
+            'access_token' => '::access-token::',
+            'refresh_token' => '::refresh-token::',
+        ];
+
+        $expectedBody = http_build_query([
+            'grant_type' => 'authorization_code',
+            'client_id' => $this->testClientId,
+            'client_secret' => $this->testClientSecret,
+            'redirect_uri' => $this->testRedirectUri,
+            'code' => self::TEST_CODE,
+        ]);
+
+        $container = [];
+        $history = Middleware::history($container);
+        $client = $this->createClientMock($expectedResponse, $history);
+
+        $oAuth2 = new OAuth2(
+            $this->testClientId,
+            $this->testClientSecret,
+            $this->testRedirectUri,
+        );
+        $oAuth2->setEnvironment($environment);
+        $oAuth2->setClient($client);
+
+        $sut = $oAuth2->getAccessToken(self::TEST_CODE, self::TEST_STATE);
+
+        /** @var Request $request */
+        $request = $container[0]['request'];
+
+        $this->assertSame($expectedResponse, $sut);
+        $this->assertSame("$url/oauth/token", (string)$request->getUri());
+        $this->assertSame($expectedBody, (string)$request->getBody());
+        $this->assertSame('application/x-www-form-urlencoded', $request->getHeader('Content-Type')[0]);
+    }
+
+    /**
+     * @test
+     * @small
+     * @throws JsonException
+     */
+    public function throws_access_token_exception_when_a_client_errors_occurs_while_issuing_an_access_token(): void
+    {
+        $expectedResponse = ['foo' => 'bar'];
+        $expectedResponseAsJson = json_encode($expectedResponse, JSON_THROW_ON_ERROR);
+        $expectedStatusCode = 422;
+
+        $client = $this->createMockClientThatThrowsClientException($expectedResponse, $expectedStatusCode);
+
+        $oAuth2 = new OAuth2(
+            $this->testClientId,
+            $this->testClientSecret,
+            $this->testRedirectUri,
+        );
+        $oAuth2->setClient($client);
+
+        try {
+            $oAuth2->getAccessToken(self::TEST_CODE, self::TEST_STATE);
+        } catch (AccessTokenException $e) {
+            $this->assertSame($expectedResponseAsJson, $e->getMessage());
+            $this->assertSame($expectedStatusCode, $e->getCode());
+
+            return;
+        }
+
+        $this->fail(sprintf("%s exception was not thrown.", AccessTokenException::class));
+    }
+
     public function environmentProvider(): array
     {
         return [
@@ -129,5 +218,41 @@ class OAuthTest extends TestCase
                 'https://sandbox.melhorenvio.com.br'
             ],
         ];
+    }
+
+    /**
+     * @throws JsonException
+     */
+    private function createClientMock(array $response, callable $history): Client
+    {
+        $mock = new MockHandler([
+            new Response(
+                200,
+                [],
+                json_encode($response, JSON_THROW_ON_ERROR)
+            ),
+        ]);
+
+        $handlerStack = HandlerStack::create($mock);
+        $handlerStack->push($history);
+
+        return new Client(['handler' => $handlerStack]);
+    }
+
+    /**
+     * @throws JsonException
+     */
+    private function createMockClientThatThrowsClientException(array $responseBody, int $statusCode): Client
+    {
+        $request = new Request('POST', '::uri::');
+        $response = new Response($statusCode, [], json_encode($responseBody, JSON_THROW_ON_ERROR));
+
+        $mock = new MockHandler([
+            new ClientException('::message::', $request, $response)
+        ]);
+
+        $handlerStack = HandlerStack::create($mock);
+
+        return new Client(['handler' => $handlerStack]);
     }
 }
