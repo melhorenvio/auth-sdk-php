@@ -36,7 +36,7 @@ class OAuth2
         $this->client = new Client();
     }
 
-    protected function getEndpoint(string $path = ''): string
+    public function getEndpoint(string $path = ''): string
     {
         return self::ENDPOINT[$this->environment] . $path;
     }
