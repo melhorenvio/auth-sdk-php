@@ -27,7 +27,7 @@ class OAuth2
 
     private Client $client;
 
-    public function __construct(string  $clientId, string $clientSecret, string $redirectUri = null)
+    public function __construct(string $clientId, string $clientSecret, string $redirectUri = null)
     {
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
@@ -80,7 +80,7 @@ class OAuth2
             throw new AccessTokenException($exception);
         }
 
-        return json_decode((string) $response->getBody(), true);
+        return json_decode((string)$response->getBody(), true);
     }
 
     /**
@@ -101,7 +101,7 @@ class OAuth2
             throw new RefreshTokenException($exception);
         }
 
-        return json_decode((string) $response->getBody(), true);
+        return json_decode((string)$response->getBody(), true);
     }
 
     public function setScopes(string ...$scopes): void

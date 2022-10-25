@@ -501,7 +501,8 @@ class OAuth2Test extends TestCase
      * @small
      * @throws JsonException|AccessTokenException
      */
-    public function it_throws_exception_when_providing_a_state_different_than_the_one_present_in_the_authorization_url(): void
+    public function it_throws_exception_when_providing_a_state_different_than_the_one_present_in_the_authorization_url(
+    ): void
     {
         $container = [];
         $history = Middleware::history($container);
