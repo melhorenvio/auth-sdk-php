@@ -26,7 +26,7 @@ class OAuth2Test extends TestCase
     private const TEST_ACCESS_TOKEN = '::access-token::';
     private const TEST_CODE = '::code::';
     private const TEST_REFRESH_TOKEN = '::refresh-token::';
-    private const APPLICATION_X_WWW_FORM_URLENCODED = 'application/x-www-form-urlencoded';
+    private const APPLICATION_X_WWW_FORM_URLENCODED_HEADER = 'application/x-www-form-urlencoded';
 
     /**
      * @test
@@ -105,8 +105,10 @@ class OAuth2Test extends TestCase
      * @small
      * @dataProvider environmentProvider
      */
-    public function it_can_set_environment(string $environment, string $expectedUrl): void
-    {
+    public function it_generates_the_authorization_url_based_on_the_current_environment(
+        string $environment,
+        string $expectedUrl
+    ): void {
         $oAuth2 = new OAuth2(
             self::TEST_CLIENT_ID,
             self::TEST_CLIENT_SECRET,
@@ -145,26 +147,13 @@ class OAuth2Test extends TestCase
      * @dataProvider environmentProvider
      * @throws JsonException|AccessTokenException
      */
-    public function it_can_issue_an_oauth_access_token(string $environment, string $url): void
-    {
-        $expectedResponse = [
-            'token_type' => self::TEST_TOKEN_TYPE,
-            'expires_in' => self::TEST_EXPIRES_IN,
-            'access_token' => self::TEST_ACCESS_TOKEN,
-            'refresh_token' => self::TEST_REFRESH_TOKEN,
-        ];
-
-        $expectedBody = http_build_query([
-            'grant_type' => 'authorization_code',
-            'client_id' => self::TEST_CLIENT_ID,
-            'client_secret' => self::TEST_CLIENT_SECRET,
-            'redirect_uri' => self::TEST_REDIRECT_URI,
-            'code' => self::TEST_CODE,
-        ]);
-
+    public function it_issues_an_access_token_based_on_the_current_environment_url(
+        string $environment,
+        string $url
+    ): void {
         $container = [];
         $history = Middleware::history($container);
-        $client = $this->createClientMock($expectedResponse, $history);
+        $client = $this->createClientMock([], $history);
 
         $oAuth2 = new OAuth2(
             self::TEST_CLIENT_ID,
@@ -177,15 +166,146 @@ class OAuth2Test extends TestCase
         $authorizationUrl = $oAuth2->getAuthorizationUrl();
         $state = $this->getStateFromAuthorizationUrl($authorizationUrl);
 
-        $sut = $oAuth2->getAccessToken(self::TEST_CODE, $state);
+        $oAuth2->getAccessToken(self::TEST_CODE, $state);
 
         /** @var Request $request */
         $request = $container[0]['request'];
 
-        $this->assertSame($expectedResponse, $sut);
         $this->assertSame("$url/oauth/token", (string)$request->getUri());
+    }
+
+    /**
+     * @test
+     * @small
+     * @throws JsonException|AccessTokenException
+     */
+    public function it_issues_an_access_token_with_a_valid_body(): void
+    {
+        $expectedBody = http_build_query([
+            'grant_type' => 'authorization_code',
+            'client_id' => self::TEST_CLIENT_ID,
+            'client_secret' => self::TEST_CLIENT_SECRET,
+            'redirect_uri' => self::TEST_REDIRECT_URI,
+            'code' => self::TEST_CODE,
+        ]);
+
+        $container = [];
+        $history = Middleware::history($container);
+        $client = $this->createClientMock([], $history);
+
+        $oAuth2 = new OAuth2(
+            self::TEST_CLIENT_ID,
+            self::TEST_CLIENT_SECRET,
+            self::TEST_REDIRECT_URI,
+        );
+        $oAuth2->setClient($client);
+
+        $authorizationUrl = $oAuth2->getAuthorizationUrl();
+        $state = $this->getStateFromAuthorizationUrl($authorizationUrl);
+
+        $oAuth2->getAccessToken(self::TEST_CODE, $state);
+
+        /** @var Request $request */
+        $request = $container[0]['request'];
+
         $this->assertSame($expectedBody, (string)$request->getBody());
-        $this->assertSame(self::APPLICATION_X_WWW_FORM_URLENCODED, $request->getHeader('Content-Type')[0]);
+    }
+
+    /**
+     * @test
+     * @small
+     * @throws JsonException|AccessTokenException
+     */
+    public function it_issues_an_access_token_with_the_APPLICATION_X_WWW_FORM_URLENCODED_header(): void
+    {
+        $container = [];
+        $history = Middleware::history($container);
+        $client = $this->createClientMock([], $history);
+
+        $oAuth2 = new OAuth2(
+            self::TEST_CLIENT_ID,
+            self::TEST_CLIENT_SECRET,
+            self::TEST_REDIRECT_URI,
+        );
+        $oAuth2->setClient($client);
+
+        $authorizationUrl = $oAuth2->getAuthorizationUrl();
+        $state = $this->getStateFromAuthorizationUrl($authorizationUrl);
+
+        $oAuth2->getAccessToken(self::TEST_CODE, $state);
+
+        /** @var Request $request */
+        $request = $container[0]['request'];
+
+        $this->assertSame(
+            self::APPLICATION_X_WWW_FORM_URLENCODED_HEADER,
+            $request->getHeader('Content-Type')[0]
+        );
+    }
+
+    /**
+     * @test
+     * @small
+     * @throws JsonException|AccessTokenException
+     * @dataProvider shouldUseStateProvider
+     */
+    public function it_can_issue_an_access_token_with_and_without_providing_a_state(bool $shouldUseState): void
+    {
+        $container = [];
+        $history = Middleware::history($container);
+        $client = $this->createClientMock([], $history);
+
+        $oAuth2 = new OAuth2(
+            self::TEST_CLIENT_ID,
+            self::TEST_CLIENT_SECRET,
+            self::TEST_REDIRECT_URI,
+        );
+        $oAuth2->setClient($client);
+
+        $state = null;
+        if ($shouldUseState) {
+            $authorizationUrl = $oAuth2->getAuthorizationUrl();
+            $state = $this->getStateFromAuthorizationUrl($authorizationUrl);
+        }
+
+        $oAuth2->getAccessToken(self::TEST_CODE, $state);
+
+        /** @var Request $request */
+        $request = $container[0]['request'];
+
+        $this->assertSame(
+            self::APPLICATION_X_WWW_FORM_URLENCODED_HEADER,
+            $request->getHeader('Content-Type')[0]
+        );
+    }
+
+    /**
+     * @test
+     * @small
+     * @dataProvider environmentProvider
+     * @throws JsonException|AccessTokenException
+     */
+    public function it_returns_the_access_token_retrieved_by_api(): void
+    {
+        $expectedResponse = [
+            'token_type' => self::TEST_TOKEN_TYPE,
+            'expires_in' => self::TEST_EXPIRES_IN,
+            'access_token' => self::TEST_ACCESS_TOKEN,
+            'refresh_token' => self::TEST_REFRESH_TOKEN,
+        ];
+
+        $client = $this->createClientMock($expectedResponse);
+
+        $oAuth2 = new OAuth2(
+            self::TEST_CLIENT_ID,
+            self::TEST_CLIENT_SECRET,
+            self::TEST_REDIRECT_URI,
+        );
+        $oAuth2->setClient($client);
+
+        $sut = $oAuth2->getAccessToken(self::TEST_CODE, null);
+
+        $this->assertSame($expectedResponse, $sut);
     }
 
     /**
@@ -224,29 +344,15 @@ class OAuth2Test extends TestCase
      * @test
      * @small
      * @dataProvider environmentProvider
-     * @throws JsonException
-     * @throws RefreshTokenException
+     * @throws JsonException|RefreshTokenException
      */
-    public function it_can_issue_oauth_refresh_token(string $environment, string $url): void
-    {
-        $expectedResponse = [
-            'token_type' => self::TEST_TOKEN_TYPE,
-            'expires_in' => self::TEST_EXPIRES_IN,
-            'access_token' => self::TEST_ACCESS_TOKEN,
-            'redirect_uri' => self::TEST_REDIRECT_URI,
-            'code' => self::TEST_CODE,
-        ];
-
-        $expectedBody = http_build_query([
-            'grant_type' => 'refresh_token',
-            'client_id' => self::TEST_CLIENT_ID,
-            'client_secret' => self::TEST_CLIENT_SECRET,
-            'refresh_token' => self::TEST_REFRESH_TOKEN,
-        ]);
-
+    public function it_issues_an_refresh_token_based_on_the_current_environment_url(
+        string $environment,
+        string $url
+    ): void {
         $container = [];
         $history = Middleware::history($container);
-        $client = $this->createClientMock($expectedResponse, $history);
+        $client = $this->createClientMock([], $history);
 
         $oAuth2 = new OAuth2(
             self::TEST_CLIENT_ID,
@@ -256,15 +362,103 @@ class OAuth2Test extends TestCase
         $oAuth2->setEnvironment($environment);
         $oAuth2->setClient($client);
 
-        $sut = $oAuth2->refreshToken(self::TEST_REFRESH_TOKEN);
+        $oAuth2->refreshToken(self::TEST_REFRESH_TOKEN);
 
         /** @var Request $request */
         $request = $container[0]['request'];
 
-        $this->assertSame($expectedResponse, $sut);
         $this->assertSame("$url/oauth/token", (string)$request->getUri());
+    }
+
+    /**
+     * @test
+     * @small
+     * @throws JsonException|RefreshTokenException
+     */
+    public function it_issues_an_refresh_token_with_a_valid_body(): void
+    {
+        $expectedBody = http_build_query([
+            'grant_type' => 'refresh_token',
+            'client_id' => self::TEST_CLIENT_ID,
+            'client_secret' => self::TEST_CLIENT_SECRET,
+            'refresh_token' => self::TEST_REFRESH_TOKEN,
+        ]);
+
+        $container = [];
+        $history = Middleware::history($container);
+        $client = $this->createClientMock([], $history);
+
+        $oAuth2 = new OAuth2(
+            self::TEST_CLIENT_ID,
+            self::TEST_CLIENT_SECRET,
+            self::TEST_REDIRECT_URI,
+        );
+        $oAuth2->setClient($client);
+
+        $oAuth2->refreshToken(self::TEST_REFRESH_TOKEN);
+
+        /** @var Request $request */
+        $request = $container[0]['request'];
+
         $this->assertSame($expectedBody, (string)$request->getBody());
-        $this->assertSame(self::APPLICATION_X_WWW_FORM_URLENCODED, $request->getHeader('Content-Type')[0]);
+    }
+
+    /**
+     * @test
+     * @small
+     * @throws JsonException|RefreshTokenException
+     */
+    public function it_issues_an_refresh_token_with_the_APPLICATION_X_WWW_FORM_URLENCODED_header(): void
+    {
+        $container = [];
+        $history = Middleware::history($container);
+        $client = $this->createClientMock([], $history);
+
+        $oAuth2 = new OAuth2(
+            self::TEST_CLIENT_ID,
+            self::TEST_CLIENT_SECRET,
+            self::TEST_REDIRECT_URI,
+        );
+        $oAuth2->setClient($client);
+
+        $oAuth2->refreshToken(self::TEST_REFRESH_TOKEN);
+
+        /** @var Request $request */
+        $request = $container[0]['request'];
+
+        $this->assertSame(
+            self::APPLICATION_X_WWW_FORM_URLENCODED_HEADER,
+            $request->getHeader('Content-Type')[0]
+        );
+    }
+
+    /**
+     * @test
+     * @small
+     * @dataProvider environmentProvider
+     * @throws JsonException|RefreshTokenException
+     */
+    public function it_returns_the_refresh_token_retrieved_by_api(): void
+    {
+        $expectedResponse = [
+            'token_type' => self::TEST_TOKEN_TYPE,
+            'expires_in' => self::TEST_EXPIRES_IN,
+            'access_token' => self::TEST_ACCESS_TOKEN,
+            'refresh_token' => self::TEST_REFRESH_TOKEN,
+        ];
+
+        $client = $this->createClientMock($expectedResponse);
+
+        $oAuth2 = new OAuth2(
+            self::TEST_CLIENT_ID,
+            self::TEST_CLIENT_SECRET,
+            self::TEST_REDIRECT_URI,
+        );
+        $oAuth2->setClient($client);
+
+        $sut = $oAuth2->refreshToken(self::TEST_REFRESH_TOKEN);
+
+        $this->assertSame($expectedResponse, $sut);
     }
 
     /**
@@ -345,7 +539,7 @@ class OAuth2Test extends TestCase
     /**
      * @throws JsonException
      */
-    private function createClientMock(array $response, callable $history): Client
+    private function createClientMock(array $response, callable $history = null): Client
     {
         $mock = new MockHandler([
             new Response(
@@ -356,7 +550,9 @@ class OAuth2Test extends TestCase
         ]);
 
         $handlerStack = HandlerStack::create($mock);
-        $handlerStack->push($history);
+        if (isset($history)) {
+            $handlerStack->push($history);
+        }
 
         return new Client(['handler' => $handlerStack]);
     }
@@ -384,5 +580,13 @@ class OAuth2Test extends TestCase
         parse_str(parse_url($url)['query'], $queryParams);
 
         return $queryParams['state'];
+    }
+
+    public function shouldUseStateProvider(): array
+    {
+        return [
+            'with state' => [true],
+            'without state' => [false],
+        ];
     }
 }
