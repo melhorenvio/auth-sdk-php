@@ -15,7 +15,6 @@ use MelhorEnvio\Auth\Exceptions\InvalidStateException;
 use MelhorEnvio\Auth\Exceptions\RefreshTokenException;
 use MelhorEnvio\Auth\OAuth2;
 use MelhorEnvio\Tests\TestCase;
-use Mockery;
 
 class OAuthTest extends TestCase
 {
@@ -115,7 +114,7 @@ class OAuthTest extends TestCase
             self::TEST_REDIRECT_URI,
         );
 
-        $clientMock = Mockery::mock(Client::class);
+        $clientMock = $this->createMock(Client::class);
 
         $oAuth2->setClient($clientMock);
 
