@@ -153,4 +153,14 @@ class OAuth2
             throw new InvalidStateException;
         }
     }
+
+    public function setClient(Client $client): void
+    {
+        $this->client = $client;
+    }
+
+    public function getClient(): Client
+    {
+        return $this->client;
+    }
 }

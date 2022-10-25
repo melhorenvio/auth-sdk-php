@@ -2,10 +2,12 @@
 
 namespace MelhorEnvio\Tests\Unit;
 
-require_once __DIR__. '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
+use GuzzleHttp\Client;
 use MelhorEnvio\Auth\OAuth2;
 use MelhorEnvio\Tests\TestCase;
+use Mockery;
 
 class OAuthTest extends TestCase
 {
@@ -94,6 +96,25 @@ class OAuthTest extends TestCase
         $sut = $oAuth2->getAuthorizationUrl();
 
         $this->assertSame($expectedUrl, substr($sut, 0, strlen($expectedUrl)));
+    }
+
+    /**
+     * @test
+     * @small
+     */
+    public function sets_client(): void
+    {
+        $oAuth2 = new OAuth2(
+            $this->testClientId,
+            $this->testClientSecret,
+            $this->testRedirectUri,
+        );
+
+        $clientMock = Mockery::mock(Client::class);
+
+        $oAuth2->setClient($clientMock);
+
+        $this->assertSame($clientMock, $oAuth2->getClient());
     }
 
     public function environmentProvider(): array
