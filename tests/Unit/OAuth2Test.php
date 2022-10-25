@@ -10,9 +10,9 @@ use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use JsonException;
-use MelhorEnvio\Auth\Exceptions\AccessTokenException;
-use MelhorEnvio\Auth\Exceptions\InvalidStateException;
 use MelhorEnvio\Auth\Exceptions\RefreshTokenException;
+use MelhorEnvio\Auth\Exceptions\Token\AccessTokenException;
+use MelhorEnvio\Auth\Exceptions\Token\InvalidStateException;
 use MelhorEnvio\Auth\OAuth2;
 use MelhorEnvio\Tests\TestCase;
 

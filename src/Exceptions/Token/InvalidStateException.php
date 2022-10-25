@@ -1,6 +1,6 @@
 <?php
 
-namespace MelhorEnvio\Auth\Exceptions;
+namespace MelhorEnvio\Auth\Exceptions\Token;
 
 use InvalidArgumentException;
 

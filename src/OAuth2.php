@@ -4,9 +4,9 @@ namespace MelhorEnvio\Auth;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use MelhorEnvio\Auth\Exceptions\AccessTokenException;
-use MelhorEnvio\Auth\Exceptions\InvalidStateException;
 use MelhorEnvio\Auth\Exceptions\RefreshTokenException;
+use MelhorEnvio\Auth\Exceptions\Token\AccessTokenException;
+use MelhorEnvio\Auth\Exceptions\Token\InvalidStateException;
 
 class OAuth2
 {
