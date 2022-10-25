@@ -21,6 +21,9 @@ use Mockery;
 
 class OAuthTest extends TestCase
 {
+    private const TEST_CLIENT_ID = '::client-id::';
+    private const TEST_CLIENT_SECRET = '::client-secret::';
+    private const TEST_REDIRECT_URI = '::redirect-uri::';
     private const TEST_TOKEN_TYPE = '::token-type::';
     private const TEST_EXPIRES_IN = '::expires-in::';
     private const TEST_ACCESS_TOKEN = '::access-token::';
@@ -28,31 +31,18 @@ class OAuthTest extends TestCase
     private const TEST_REFRESH_TOKEN = '::refresh-token::';
     private const APPLICATION_X_WWW_FORM_URLENCODED = 'application/x-www-form-urlencoded';
 
-    private string $testClientId;
-    private string $testClientSecret;
-    private string $testRedirectUri;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->testClientId = $_ENV['TEST_CLIENT_ID'];
-        $this->testClientSecret = $_ENV['TEST_CLIENT_SECRET'];
-        $this->testRedirectUri = $_ENV['TEST_REDIRECT_URI'];
-    }
-
     /**
      * @test
      * @small
      */
-    public function instantiates_correctly(): void
+    public function it_can_be_instantiated(): void
     {
         $this->assertInstanceOf(
             OAuth2::class,
             new OAuth2(
-                $this->testClientId,
-                $this->testClientSecret,
-                $this->testRedirectUri,
+                self::TEST_CLIENT_ID,
+                self::TEST_CLIENT_SECRET,
+                self::TEST_REDIRECT_URI,
             )
         );
     }
@@ -61,12 +51,12 @@ class OAuthTest extends TestCase
      * @test
      * @small
      */
-    public function sets_scopes(): void
+    public function it_can_set_scopes(): void
     {
         $oAuth2 = new OAuth2(
-            $this->testClientId,
-            $this->testClientSecret,
-            $this->testRedirectUri,
+            self::TEST_CLIENT_ID,
+            self::TEST_CLIENT_SECRET,
+            self::TEST_REDIRECT_URI,
         );
 
         $expectedScopes = ['add-cart', 'read-cart'];
@@ -80,12 +70,12 @@ class OAuthTest extends TestCase
      * @test
      * @small
      */
-    public function sets_redirect_uri(): void
+    public function it_can_set_redirect_uri(): void
     {
         $oAuth2 = new OAuth2(
-            $this->testClientId,
-            $this->testClientSecret,
-            $this->testRedirectUri,
+            self::TEST_CLIENT_ID,
+            self::TEST_CLIENT_SECRET,
+            self::TEST_REDIRECT_URI,
         );
 
         $expectedRedirectUri = 'https://www.abc.com.br/callback';
@@ -100,12 +90,12 @@ class OAuthTest extends TestCase
      * @small
      * @dataProvider environmentProvider
      */
-    public function sets_environment(string $environment, string $expectedUrl): void
+    public function it_can_set_environment(string $environment, string $expectedUrl): void
     {
         $oAuth2 = new OAuth2(
-            $this->testClientId,
-            $this->testClientSecret,
-            $this->testRedirectUri,
+            self::TEST_CLIENT_ID,
+            self::TEST_CLIENT_SECRET,
+            self::TEST_REDIRECT_URI,
         );
 
         $oAuth2->setEnvironment($environment);
@@ -119,12 +109,12 @@ class OAuthTest extends TestCase
      * @test
      * @small
      */
-    public function sets_client(): void
+    public function it_can_set_client(): void
     {
         $oAuth2 = new OAuth2(
-            $this->testClientId,
-            $this->testClientSecret,
-            $this->testRedirectUri,
+            self::TEST_CLIENT_ID,
+            self::TEST_CLIENT_SECRET,
+            self::TEST_REDIRECT_URI,
         );
 
         $clientMock = Mockery::mock(Client::class);
@@ -140,7 +130,7 @@ class OAuthTest extends TestCase
      * @dataProvider environmentProvider
      * @throws JsonException|AccessTokenException
      */
-    public function gets_access_token(string $environment, string $url): void
+    public function it_can_issue_an_oauth_access_token(string $environment, string $url): void
     {
         $expectedResponse = [
             'token_type' => self::TEST_TOKEN_TYPE,
@@ -151,9 +141,9 @@ class OAuthTest extends TestCase
 
         $expectedBody = http_build_query([
             'grant_type' => 'authorization_code',
-            'client_id' => $this->testClientId,
-            'client_secret' => $this->testClientSecret,
-            'redirect_uri' => $this->testRedirectUri,
+            'client_id' => self::TEST_CLIENT_ID,
+            'client_secret' => self::TEST_CLIENT_SECRET,
+            'redirect_uri' => self::TEST_REDIRECT_URI,
             'code' => self::TEST_CODE,
         ]);
 
@@ -162,9 +152,9 @@ class OAuthTest extends TestCase
         $client = $this->createClientMock($expectedResponse, $history);
 
         $oAuth2 = new OAuth2(
-            $this->testClientId,
-            $this->testClientSecret,
-            $this->testRedirectUri,
+            self::TEST_CLIENT_ID,
+            self::TEST_CLIENT_SECRET,
+            self::TEST_REDIRECT_URI,
         );
         $oAuth2->setEnvironment($environment);
         $oAuth2->setClient($client);
@@ -188,7 +178,7 @@ class OAuthTest extends TestCase
      * @small
      * @throws JsonException
      */
-    public function throws_access_token_exception_when_a_client_errors_occurs_while_issuing_an_access_token(): void
+    public function it_throws_exception_when_a_http_client_errors_occurs_while_issuing_an_access_token(): void
     {
         $expectedResponse = ['foo' => 'bar'];
         $expectedResponseAsJson = json_encode($expectedResponse, JSON_THROW_ON_ERROR);
@@ -197,9 +187,9 @@ class OAuthTest extends TestCase
         $client = $this->createMockClientThatThrowsClientException($expectedResponse, $expectedStatusCode);
 
         $oAuth2 = new OAuth2(
-            $this->testClientId,
-            $this->testClientSecret,
-            $this->testRedirectUri,
+            self::TEST_CLIENT_ID,
+            self::TEST_CLIENT_SECRET,
+            self::TEST_REDIRECT_URI,
         );
         $oAuth2->setClient($client);
 
@@ -219,23 +209,23 @@ class OAuthTest extends TestCase
      * @test
      * @small
      * @dataProvider environmentProvider
-     * @throws JsonException|AccessTokenException
+     * @throws JsonException
      * @throws RefreshTokenException
      */
-    public function gets_refreshed_token(string $environment, string $url): void
+    public function it_can_issue_oauth_refresh_token(string $environment, string $url): void
     {
         $expectedResponse = [
             'token_type' => self::TEST_TOKEN_TYPE,
             'expires_in' => self::TEST_EXPIRES_IN,
             'access_token' => self::TEST_ACCESS_TOKEN,
-            'redirect_uri' => $this->testRedirectUri,
+            'redirect_uri' => self::TEST_REDIRECT_URI,
             'code' => self::TEST_CODE,
         ];
 
         $expectedBody = http_build_query([
             'grant_type' => 'refresh_token',
-            'client_id' => $this->testClientId,
-            'client_secret' => $this->testClientSecret,
+            'client_id' => self::TEST_CLIENT_ID,
+            'client_secret' => self::TEST_CLIENT_SECRET,
             'refresh_token' => self::TEST_REFRESH_TOKEN,
         ]);
 
@@ -244,9 +234,9 @@ class OAuthTest extends TestCase
         $client = $this->createClientMock($expectedResponse, $history);
 
         $oAuth2 = new OAuth2(
-            $this->testClientId,
-            $this->testClientSecret,
-            $this->testRedirectUri,
+            self::TEST_CLIENT_ID,
+            self::TEST_CLIENT_SECRET,
+            self::TEST_REDIRECT_URI,
         );
         $oAuth2->setEnvironment($environment);
         $oAuth2->setClient($client);
@@ -267,7 +257,7 @@ class OAuthTest extends TestCase
      * @small
      * @throws JsonException
      */
-    public function throws_refresh_token_exception_when_a_client_errors_occurs_while_issuing_an_refresh_token(): void
+    public function it_throws_exception_when_a_http_client_errors_occurs_while_issuing_an_refresh_token(): void
     {
         $expectedResponse = ['foo' => 'bar'];
         $expectedResponseAsJson = json_encode($expectedResponse, JSON_THROW_ON_ERROR);
@@ -276,9 +266,9 @@ class OAuthTest extends TestCase
         $client = $this->createMockClientThatThrowsClientException($expectedResponse, $expectedStatusCode);
 
         $oAuth2 = new OAuth2(
-            $this->testClientId,
-            $this->testClientSecret,
-            $this->testRedirectUri,
+            self::TEST_CLIENT_ID,
+            self::TEST_CLIENT_SECRET,
+            self::TEST_REDIRECT_URI,
         );
         $oAuth2->setClient($client);
 
@@ -295,20 +285,23 @@ class OAuthTest extends TestCase
     }
 
     /**
+     * The state is generated when the $oAuth2->getAuthorizationUrl() method is called,
+     * so we need to call this method before issuing tokens.
+     *
      * @test
      * @small
      * @throws JsonException|AccessTokenException
      */
-    public function throws_exception_when_state_is_different_than_generated_when_generating_authorization_url(): void
+    public function it_throws_exception_when_providing_a_state_different_than_the_one_present_in_the_authorization_url(): void
     {
         $container = [];
         $history = Middleware::history($container);
         $client = $this->createClientMock([], $history);
 
         $oAuth2 = new OAuth2(
-            $this->testClientId,
-            $this->testClientSecret,
-            $this->testRedirectUri,
+            self::TEST_CLIENT_ID,
+            self::TEST_CLIENT_SECRET,
+            self::TEST_REDIRECT_URI,
         );
 
         $oAuth2->setClient($client);
