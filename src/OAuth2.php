@@ -64,9 +64,7 @@ class OAuth2
      */
     public function getAccessToken(string $code, ?string $state): array
     {
-        if ($state) {
-            $this->verifyState($state);
-        }
+        $this->verifyState($state);
 
         try {
             $response = $this->client->post($this->getEndpoint('/oauth/token'), [
@@ -147,9 +145,9 @@ class OAuth2
     /**
      * @throws InvalidStateException
      */
-    protected function verifyState(string $state): void
+    protected function verifyState(?string $state): void
     {
-        if (strlen($state) === 0 && $state !== $_SESSION['me::auth::state']) {
+        if (!empty($state) && $state !== $_SESSION['me::auth::state']) {
             throw new InvalidStateException;
         }
     }

@@ -13,6 +13,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use JsonException;
 use MelhorEnvio\Auth\Exceptions\AccessTokenException;
+use MelhorEnvio\Auth\Exceptions\InvalidStateException;
 use MelhorEnvio\Auth\Exceptions\RefreshTokenException;
 use MelhorEnvio\Auth\OAuth2;
 use MelhorEnvio\Tests\TestCase;
@@ -24,7 +25,6 @@ class OAuthTest extends TestCase
     private const TEST_EXPIRES_IN = '::expires-in::';
     private const TEST_ACCESS_TOKEN = '::access-token::';
     private const TEST_CODE = '::code::';
-    private const TEST_STATE = '::state::';
     private const TEST_REFRESH_TOKEN = '::refresh-token::';
     private const APPLICATION_X_WWW_FORM_URLENCODED = 'application/x-www-form-urlencoded';
 
@@ -169,7 +169,10 @@ class OAuthTest extends TestCase
         $oAuth2->setEnvironment($environment);
         $oAuth2->setClient($client);
 
-        $sut = $oAuth2->getAccessToken(self::TEST_CODE, self::TEST_STATE);
+        $authorizationUrl = $oAuth2->getAuthorizationUrl();
+        $state = $this->getStateFromAuthorizationUrl($authorizationUrl);
+
+        $sut = $oAuth2->getAccessToken(self::TEST_CODE, $state);
 
         /** @var Request $request */
         $request = $container[0]['request'];
@@ -201,7 +204,7 @@ class OAuthTest extends TestCase
         $oAuth2->setClient($client);
 
         try {
-            $oAuth2->getAccessToken(self::TEST_CODE, self::TEST_STATE);
+            $oAuth2->getAccessToken(self::TEST_CODE, null);
         } catch (AccessTokenException $e) {
             $this->assertSame($expectedResponseAsJson, $e->getMessage());
             $this->assertSame($expectedStatusCode, $e->getCode());
@@ -291,6 +294,32 @@ class OAuthTest extends TestCase
         $this->fail(sprintf("%s exception was not thrown.", RefreshTokenException::class));
     }
 
+    /**
+     * @test
+     * @small
+     * @throws JsonException|AccessTokenException
+     */
+    public function throws_exception_when_state_is_different_than_generated_when_generating_authorization_url(): void
+    {
+        $container = [];
+        $history = Middleware::history($container);
+        $client = $this->createClientMock([], $history);
+
+        $oAuth2 = new OAuth2(
+            $this->testClientId,
+            $this->testClientSecret,
+            $this->testRedirectUri,
+        );
+
+        $oAuth2->setClient($client);
+
+        $oAuth2->getAuthorizationUrl();
+
+        $this->expectException(InvalidStateException::class);
+
+        $oAuth2->getAccessToken(self::TEST_CODE, '::invalid-state::');
+    }
+
     public function environmentProvider(): array
     {
         return [
@@ -339,5 +368,13 @@ class OAuthTest extends TestCase
         $handlerStack = HandlerStack::create($mock);
 
         return new Client(['handler' => $handlerStack]);
+    }
+
+    private function getStateFromAuthorizationUrl(string $url): string
+    {
+        $queryParams = [];
+        parse_str(parse_url($url)['query'], $queryParams);
+
+        return $queryParams['state'];
     }
 }
