@@ -62,7 +62,7 @@ class OAuth2
     /**
      * @throws AccessTokenException
      */
-    public function getAccessToken(string $code, ?string $state)
+    public function getAccessToken(string $code, ?string $state): array
     {
         if ($state) {
             $this->verifyState($state);
@@ -88,7 +88,7 @@ class OAuth2
     /**
      * @throws RefreshTokenException
      */
-    public function refreshToken(string $refreshToken): mixed
+    public function refreshToken(string $refreshToken): array
     {
         try {
             $response = $this->client->post($this->getEndpoint('/oauth/token'), [
