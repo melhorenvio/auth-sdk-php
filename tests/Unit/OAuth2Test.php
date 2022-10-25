@@ -16,7 +16,7 @@ use MelhorEnvio\Auth\Exceptions\RefreshTokenException;
 use MelhorEnvio\Auth\OAuth2;
 use MelhorEnvio\Tests\TestCase;
 
-class OAuthTest extends TestCase
+class OAuth2Test extends TestCase
 {
     private const TEST_CLIENT_ID = '::client-id::';
     private const TEST_CLIENT_SECRET = '::client-secret::';
