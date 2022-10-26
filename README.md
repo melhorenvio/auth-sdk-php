@@ -26,10 +26,10 @@ Agora você pode incluir o processo de autorização do Melhor Envio no seu proj
 ### require
 * PHP >= 7.4
 * Ext-json = *
-* Guzzlehttp/guzzle >= 6.5
+* Guzzlehttp/guzzle >= 7.0
 
 ### require-dev
-* phpunit/phpunit >= 5
+* phpunit/phpunit >= 9.5
 
 
 ## Instalação
@@ -178,6 +178,7 @@ Se você descobrir algum problema de segurança, por favor, envie um e-mail para
 - [Marçal Pizzi](https://github.com/marcalpizzi)
 - [Pedro Barros](https://github.com/pedrobarros05)
 - [Vinícius Tessmann](https://github.com/viniciustessmann)
+- [Thyago Santos](https://github.com/tsantos8080)
 
 ## Licença
 
