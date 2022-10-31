@@ -46,6 +46,11 @@ class OAuth2
         $this->environment = $environment;
     }
 
+    public function getEnvironment(): string
+    {
+        return $this->environment;
+    }
+
     public function getAuthorizationUrl(): string
     {
         $query = http_build_query([

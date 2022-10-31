@@ -65,6 +65,24 @@ class OAuth2Test extends TestCase
     /**
      * @test
      * @small
+     * @dataProvider environmentProvider
+     */
+    public function it_can_get_the_current_environment(string $environment): void
+    {
+        $oAuth2 = new OAuth2(
+            self::TEST_CLIENT_ID,
+            self::TEST_CLIENT_SECRET,
+            self::TEST_REDIRECT_URI,
+        );
+
+        $oAuth2->setEnvironment($environment);
+
+        $this->assertSame($environment, $oAuth2->getEnvironment());
+    }
+
+    /**
+     * @test
+     * @small
      */
     public function it_can_set_scopes(): void
     {
