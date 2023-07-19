@@ -9,7 +9,7 @@ Agora você pode incluir o processo de autorização do Melhor Envio no seu proj
 
 ## Índice
 
-* [Instalação](#Instalação)
+* [Instalação](#instalação)
 * [Cofiguração Inicial](#configuração-inicial)
 * [Exemplos de uso](#exemplos-de-uso)
     * [Gerando o Access Token](#gerando-o-access-token)
